@@ -1,11 +1,12 @@
-from email import header
-from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from . import schemas
-from fastapi import Depends, status, HTTPException
+
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from .routers.auth import login_prefix
+from jose import JWTError, jwt
+
 from .config import settings
+
+login_prefix = 'login'
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=login_prefix)
 
 
@@ -29,7 +30,7 @@ def verify_access_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get('user_id')
-
+        
         if not user_id:
             raise credentials_exception
 

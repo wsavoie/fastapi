@@ -2,11 +2,8 @@ import fastapi
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.oauth2 import ACCESS_TOKEN_EXPIRE_MINUTES
 
-from . import models, utils
-from .config import settings
-from .database import engine
+from . import utils
 from .routers import auth, post, user, vote
 
 #below line creates tables which don't exist already using sql alchemy, we instead use alembic because it is more powerful
