@@ -15,7 +15,7 @@ SECRET_KEY = settings.secret_key
 ALGORITHM  = settings.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
-def create_access_token(data: dict, expires_delta : Optional[timedelta]):
+def create_access_token(data: dict, expires_delta : Optional[timedelta]=None):
     to_encode = data.copy()
     
     if expires_delta:
