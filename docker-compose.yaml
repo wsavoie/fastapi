@@ -1,32 +1,35 @@
 version: "3"
 services:
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=fastapi 
+        ports:
+            - "54321:5432"
+        volumes:
+            - postgres-db:/var/lib/postgresql/data
     api:
         build: .
         depends_on:
-            - postgres
+            - pgadmin
         ports:
             - 8000:8000
         volumes:
         #ro means only container can read only
             - ./:/usr/src/app:ro
-        env_file:
-            - ./.env
+        # env_file:
+        #     - ./.env
         environment:
         #since it's all in same file we are in a docker network so we only need to use the name of the postgres service
             - DATABASE_HOSTNAME=postgres
         command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    postgres:
-        image: postgres
-        environment:
-            - POSTGRES_PASSWORD=postgres
-            - POSTGRES_DB=fastapi  
-        volumes:
-            - postgres-db:/var/lib/postgresql/data
+
     pgadmin:
         image: dpage/pgadmin4
         environment:
-            PGADMIN_DEFAULT_EMAIL: willsavoie@gmail.com
-            PGADMIN_DEFAULT_PASSWORD: pass
+            PGADMIN_DEFAULT_EMAIL: a@a.com
+            PGADMIN_DEFAULT_PASSWORD: 123
             PGADMIN_LISTEN_PORT: 80
         ports:
             - 15432:80
