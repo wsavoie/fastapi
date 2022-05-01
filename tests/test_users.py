@@ -1,21 +1,12 @@
-from fastapi.testclient import TestClient
-from app.main import app
-from app.database import get_db
-from .create_test_db import get_test_db
+from .create_test_db import client, session
 
-client = TestClient(app)
-
-app.dependency_overrides[get_db] = get_test_db
-
-
-def test_root():
+def test_root(client,session):
     res = client.get("/")
     assert res.json().get('message') == "Hello World"
     assert res.status_code == 200
-    print('asd')
 
 
-def test_create_user():
+def test_create_user(client,session):
     res = client.post("/users/", json={'email': 'g@g.com',
                                        'password': '123'})
     assert res.status_code == 201
