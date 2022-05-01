@@ -1,0 +1,9 @@
+__pycache__
+venv/
+.vscode/
+Procfile
+
+#Ignoring git and cache folders
+.git
+.cache
+.gitignore
