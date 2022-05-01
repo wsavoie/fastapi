@@ -1,18 +1,7 @@
-from jose import JWTError, jwt
+from jose import jwt
 from app import schemas
 from app.oauth2 import ALGORITHM, SECRET_KEY
-from .create_test_db import client, session
 import pytest
-
-
-@pytest.fixture()
-def test_user(client):
-    user_data = {'email': "test@test.com", 'password':'123'}
-    res = client.post("/users/", json=user_data)
-    assert res.status_code == 201
-    new_user = res.json()
-    new_user['password'] = user_data['password']
-    return new_user 
 
 def test_root(client,session):
     res = client.get("/")
@@ -36,3 +25,45 @@ def test_login_user(client,test_user):
     assert res.status_code == 200
     assert test_user['id'] == payload['user_id']
     assert login_res.token_type == 'bearer'
+
+@pytest.mark.parametrize("email, password, status_code",
+    [
+        ('test@test.com', 'wrong_pass', 403),
+        ('bad_Format', 'wrong_pass', 403),
+        (None, 'wrong_pass', 422),
+        ("test@test.com", None, 422),
+        ('wrongemail@email.com','wrong_pass', 403),
+    ])
+def test_incorrent_login(client,email,password, status_code):
+    res = client.post("/login", data={'username': email, 'password':password})
+
+    assert res.status_code == status_code
+    if status_code == 403:
+        assert res.json()['detail'] == "Invalid Credentials"
+    elif status_code == 422:
+        res.json()['detail'][0]['type']='value_error.missing'
+
+def test_read_user(client, test_user):
+    id = test_user['id']
+    res = client.get(f"/users/{id}/")
+    print(res.json())
+    user = schemas.UserResponse(**res.json())
+    print(user)
+    assert user.id == id
+    assert res.status_code == 200
+
+@pytest.mark.parametrize("id, status_code",
+    [
+        ('4', 404),
+        (4, 404),
+    ])
+def test_get_wrong_user(client, id, status_code):
+    res = client.get(f"/users/{id}/")
+    print(res.json())
+    assert res.json()['detail'] == f'User with id: {id} does not exist'
+    assert res.status_code == status_code
+
+#test_update
+#test_update_wrong_user
+#test_delete
+#test_delete_wrong_user
