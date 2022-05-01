@@ -12,7 +12,6 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
-    email: EmailStr
     created_at: datetime
     class Config:
         orm_mode = True
